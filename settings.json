@@ -1,1 +1,1 @@
-{"County Name": "Arapahoe", "Batches Per Container": 15, "File Name": "C:/Users/CR0616/Desktop/Template.csv", "Column Names": ["County", "ICC ID", "ICC Batch", "# of Ballots", "Container Number", "Date"]}
+{"County Name": "Arapahoe", "Batches Per Container": 15, "File Name": "C:/Users/CR0616/Desktop/Template.csv", "Column Names": ["County", "Device ID", "Batch", "# of Ballots", "Location", "Date"]}
