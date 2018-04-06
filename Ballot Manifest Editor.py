@@ -115,7 +115,7 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
             # Seals no longer wanted per Corene and Jim 3/12/18
             # new_data[column_names[5]] = [self.seal_1_line_edit.text() for i in range(batches_per_container)]
             # new_data[column_names[6]] = [self.seal_2_line_edit.text() for i in range(batches_per_container)]
-            new_data[column_names[5]] = [now.strftime('%m-%d-%Y') for i in range(batches_per_container)]
+            # new_data[column_names[5]] = [now.strftime('%m-%d-%Y') for i in range(batches_per_container)]
             mask = new_data[column_names[3]] != ''
             new_data = new_data[mask]
             new_data.set_index(keys=column_names[:3], inplace=True)
@@ -247,11 +247,10 @@ class SettingsPopup(QtWidgets.QWidget, settings_popup.Ui_OptionsDialog):
                 "File Name": self.file,
                 "Column Names": [
                     'County',
-                    'ICC ID',
-                    'ICC Batch',
+                    'Device ID',
+                    'Batch',
                     '# of Ballots',
-                    'Container Number',
-                    'Date'
+                    'Location',
                 ]
             }
 
