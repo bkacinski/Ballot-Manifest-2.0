@@ -8,7 +8,7 @@
 1. Use PyInstaller
   1. https://github.com/brentvollebregt/auto-py-to-exe
 2. In the python installation navigate to: /Lib/site-packages/PyInstaller/hooks
-  1. Add hook.pandas.py
+  1. Add hook-pandas.py
   2. include code: hiddenimports = ['pandas._libs.tslibs.timedeltas']
 3. PyInstall settings:
   1. One File
