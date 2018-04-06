@@ -1,6 +1,5 @@
 import sys
 import pandas as pd
-import datetime
 from Data.manifest_form import *
 from Data import settings_popup
 from PyQt5 import QtWidgets
@@ -12,11 +11,6 @@ with open('settings.json', 'r') as f:
     batches_per_container = settings["Batches Per Container"]
     column_names = settings["Column Names"]
     file_name = settings["File Name"]
-
-    # print(f"County Name: {county_name}, type: {type(county_name)}")
-    # print(f"County Name: {batches_per_container}, type: {type(batches_per_container)}")
-    # print(f"County Name: {column_names}, type: {type(column_names)}")
-    # print(f"County Name: {file_name}, type: {type(file_name)}")
 
 
 class Main(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -33,8 +27,6 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_open.triggered.connect(self.open_file)
         self.action_new.triggered.connect(self.create_from_template)
         self.actionOptions.triggered.connect(self.options_window)
-        # self.seal_1_line_edit.returnPressed.connect(self.seal_2_line_edit.setFocus)
-        # self.seal_2_line_edit.returnPressed.connect(self.submit_form_button.setFocus)
 
         # Class Variables
         self.df = None
@@ -78,7 +70,6 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
             if index != len(self.batch_entries) + 2:
                 line_edit.returnPressed.connect(self.batch_entries[index - 2].setFocus)
             else:
-                # line_edit.returnPressed.connect(self.seal_1_line_edit.setFocus)
                 line_edit.returnPressed.connect(self.submit_form_button.setFocus)
         spacer_item = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.form_frame.addItem(spacer_item, batches_per_container + 3, 4)
@@ -94,33 +85,32 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
                 if value != "":
                     last_value = -index + -1
                     break
-            # print(last_value)
 
+            # Check for contiguous value error
             for value in iterable[:last_value]:
                 if value == "":
                     return False
             else:
-                return True
+                for value in iterable[:last_value + 1]:
+                    try:
+                        number_checker = int(value)
+                    except ValueError:
+                        return False
+                else:
+                    return True
 
         valid_form = check_valid(entries)
 
         if valid_form:
-            now = datetime.datetime.now()
             new_data = pd.DataFrame(columns=column_names)
             new_data[column_names[0]] = [county_name for i in range(batches_per_container)]
             new_data[column_names[1]] = [self.container_info[0] for i in range(batches_per_container)]
             new_data[column_names[2]] = [self.container_info[1] + i for i in range(batches_per_container)]
             new_data[column_names[3]] = [entry.text() for entry in self.batch_entries]
             new_data[column_names[4]] = [self.container_info[2] for i in range(batches_per_container)]
-            # Seals no longer wanted per Corene and Jim 3/12/18
-            # new_data[column_names[5]] = [self.seal_1_line_edit.text() for i in range(batches_per_container)]
-            # new_data[column_names[6]] = [self.seal_2_line_edit.text() for i in range(batches_per_container)]
-            # new_data[column_names[5]] = [now.strftime('%m-%d-%Y') for i in range(batches_per_container)]
             mask = new_data[column_names[3]] != ''
             new_data = new_data[mask]
             new_data.set_index(keys=column_names[:3], inplace=True)
-            # self.seal_1_line_edit.clear()
-            # self.seal_2_line_edit.clear()
             self.df = self.df.append(new_data)
             self.df.sort_index(inplace=True)
             self.df.to_csv(self.filename)
@@ -130,7 +120,7 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             # print("Invalid Form")
             error_dialog = QtWidgets.QErrorMessage()
-            error_dialog.showMessage("Error: All consecutive batches must be filled in.")
+            error_dialog.showMessage("Error: All consecutive batches must be filled in. And all values must be numbers")
             error_dialog.exec_()
 
     def submit_label(self):
@@ -164,24 +154,18 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.file_loaded and not self.batch_loaded:
             for line_edit in self.batch_entries:
                 line_edit.setDisabled(True)
-            # self.seal_1_line_edit.setDisabled(True)
-            # self.seal_2_line_edit.setDisabled(True)
             self.label_line_edit.setDisabled(False)
             self.submit_label_button.setDisabled(False)
             self.submit_form_button.setDisabled(True)
         elif self.file_loaded is False:
             for line_edit in self.batch_entries:
                 line_edit.setDisabled(True)
-            # self.seal_1_line_edit.setDisabled(True)
-            # self.seal_2_line_edit.setDisabled(True)
             self.label_line_edit.setDisabled(True)
             self.submit_label_button.setDisabled(True)
             self.submit_form_button.setDisabled(True)
         elif self.file_loaded and self.batch_loaded:
             for line_edit in self.batch_entries:
                 line_edit.setDisabled(False)
-            # self.seal_1_line_edit.setDisabled(False)
-            # self.seal_2_line_edit.setDisabled(False)
             self.label_line_edit.setDisabled(True)
             self.submit_label_button.setDisabled(True)
             self.submit_form_button.setDisabled(False)
@@ -263,38 +247,6 @@ class SettingsPopup(QtWidgets.QWidget, settings_popup.Ui_OptionsDialog):
             json.dump(new_settings, f)
 
         self.close()
-
-    #     with open('settings.py', 'r+') as f:
-    #         settings = f.readlines()
-    #
-    #     batch_line = self.find_line(settings, 'batches_per_container')
-    #     path_line = self.find_line(settings, 'file_name')
-    #
-    #     new_batch = settings[batch_line].split('=')
-    #     new_batch = new_batch[0] + '= %s\n' % self.batches_spin_box.value()
-    #     new_path = settings[path_line].split('=')
-    #     new_path = new_path[0] + '= "%s"\n' % self.file
-    #
-    #     settings[batch_line] = new_batch
-    #     settings[path_line] = new_path
-    #
-    #     window.filename = self.file
-    #     global batches_per_container
-    #     batches_per_container = self.batches_spin_box.value()
-    #     window.load_file()
-    #
-    #     with open('settings.py', 'r+') as f:
-    #         f.writelines(settings)
-    #
-    #     self.close()
-    #
-    # @staticmethod
-    # def find_line(file, search):
-    #     for line in file:
-    #         if search in line:
-    #             return file.index(line)
-    #     else:
-    #         quit()
 
 
 if __name__ == '__main__':
