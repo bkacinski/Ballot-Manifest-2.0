@@ -1,1 +1,1 @@
-{"County Name": "Arapahoe", "Batches Per Container": 15, "File Name": "", "Column Names": ["County", "Device ID", "Batch", "# of Ballots", "Location"]}
+{"County Name": "Arapahoe", "Batches Per Container": 15, "File Name": "", "Column Names": ["County", "Tabulator ID", "Batch", "# of Ballot Cards", "Location"]}
