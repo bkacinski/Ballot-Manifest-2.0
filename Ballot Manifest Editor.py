@@ -77,7 +77,7 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def submit_form(self):
         # Check if any fields between first and last are blank
-        entries = [entry.text() for entry in self.batch_entries]
+        entries = [entry.text() for entry in self.batch_entries] 
 
         def check_valid(iterable):
             last_value = 0
